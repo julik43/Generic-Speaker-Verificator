@@ -65,7 +65,7 @@ os.environ['CUDA_VISIBLE_DEVICES']= '0'
 FLAGS = None
 
 # Files for the model
-FILE_TRAIN = 'train_speakers.txt'
+FILE_TRAIN = 'train_speakers_initialization.txt'
 FILE_VALID = 'valid_speakers.txt'
 FILE_TEST = 'test_speakers.txt'
 FILE_LIST = 'list_train_speakers.txt'

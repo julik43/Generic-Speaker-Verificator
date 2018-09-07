@@ -59,10 +59,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Using just one GPU in case of GPU 
 os.environ['CUDA_VISIBLE_DEVICES']= '0'
 
-# config = tf.ConfigProto(allow_soft_placement=True)
-# config.gpu_options.allocator_type = 'BFC'
-# config.gpu_options.per_process_gpu_memory_fraction = 0.80
-
 # Basic model parameters as external flags.
 FLAGS = None
 
@@ -359,7 +355,9 @@ class cnn7:
 
     # Creating a folder where to save the parameter
     file_path = str(sys.argv[0]) +'_' + str(FLAGS.learning_rate)+'_'+str(FLAGS.num_epochs)
-    os.mkdir(file_path)
+    
+    if os.path.exists(file_path) == False:
+      os.mkdir(file_path)
 
     # Creating a file to write the loss and acurracy
     output_file = open(file_path+'_results.txt', 'w')
@@ -385,6 +383,8 @@ class cnn7:
 
       # initialize variables (params)
       sess.run(init_op)
+
+      saver = tf.train.Saver()     
 
       # Initializing the step for train, validation and test
       # This is done to not show the results in every iteration but every certain amount of spets
@@ -559,8 +559,8 @@ class cnn7:
 
                     # evaluation with train data
                     feed_dict = {self.X1: X1_array, self.X2: X2_array, self.Y : Y_array}
-                    fetches = [optimizer, self.loss, self.accuracy, self.summary, self.W_cn1, self.b_cn1, self.W_cn2, self.b_cn2, self.W_cn3, self.b_cn3, self.W_cn4, self.b_cn4, self.W_fc1, self.b_fc1, self.W_fc2, self.b_fc2, self.W_fc3, self.b_fc3]
-                    _,train_loss, train_acc, train_summary, W_cn1, b_cn1, W_cn2, b_cn2, W_cn3, b_cn3, W_cn4, b_cn4, W_fc1, b_fc1, W_fc2, b_fc2, W_fc3, b_fc3 = sess.run(fetches, feed_dict=feed_dict)
+                    fetches = [optimizer, self.loss, self.accuracy, self.summary]
+                    _,train_loss, train_acc, train_summary = sess.run(fetches, feed_dict=feed_dict)
                     train_writer.add_summary(train_summary, step_train)
 
                     acc_train = acc_train + train_acc
@@ -619,23 +619,9 @@ class cnn7:
             
             j+=1
             
-
-        # Saving the parameters of the model
-        np.save(file_path+'/'+ str(n_epochs) + "_W_cn1",W_cn1)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_cn1",b_cn1)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_cn2",W_cn2)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_cn2",b_cn2)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_cn3",W_cn3)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_cn3",b_cn3)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_cn4",W_cn4)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_cn4",b_cn4)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_fc1",W_fc1)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_fc1",b_fc1)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_fc2",W_fc2)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_fc2",b_fc2)
-        np.save(file_path+'/'+ str(n_epochs) + "_W_fc3",W_fc3)
-        np.save(file_path+'/'+ str(n_epochs) + "_b_fc3",b_fc3)
-
+        # Saving the weights just once (no in every epoch) 
+        save_path = saver.save(sess, str(file_path+'/'+ str(n_epochs) +'weights.ckpt') )
+        
 
 def run():
 
