@@ -1,5 +1,7 @@
 # Generic-Speaker-Verificator
 
+This repository has been updated to: https://github.com/julik43/Online-Identification-of-New-Speakers
+
 To use this model you need:
 
 1. Download a database	
